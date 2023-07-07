@@ -14,7 +14,7 @@ create or replace function typeid_generate(kind text)
 returns typeid
 as $$
 begin
-  return (uuid_generate_v7(), kind);
+  return (kind, uuid_generate_v7());
 end
 $$
 language plpgsql
