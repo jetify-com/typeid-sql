@@ -17,7 +17,7 @@ We recommend copying the SQL scripts into your migrations directory and using th
 migration tool of your choice. For example, [Flyway](https://flywaydb.org/), or
 [Liquibase](https://www.liquibase.org/).
 
-Noe that this repo is using Supabase as a way to easily start a Postgres instance
+Note that this repo is using Supabase as a way to easily start a Postgres instance
 for development and testing, but you do **not** need to use Supabase for this
 implementation to work – simply use the Postgres instance of your choice.
 
