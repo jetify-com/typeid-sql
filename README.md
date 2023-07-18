@@ -68,6 +68,19 @@ SELECT typeid_print(id) AS id, "name", "email" FROM users
 WHERE id = typeid_parse('user_01h455vb4pex5vsknk084sn02q');
 ```
 
+## (Optional) Operator overload
+If you'd like to be able to do the following:
+
+```sql
+-- Query directly from the DB with a serialized typeid
+SELECT * FROM users u WHERE u.id = 'user_01h455vb4pex5vsknk084sn02q';
+
+-- Result:
+-- "(user,018962e7-3a6d-7290-b088-5c4e3bdf918c)",Ben Bitdiddle,ben@bitdiddle.com
+```
+
+Then you can add in [the operator overload function for typeids](https://github.com/search?q=repo%3Ajetpack-io%2Ftypeid-sql%20compare_type_id_equality&type=code):
+
 ## Future work (contributions welcome)
 - Include examples not just for Postgres, but for other databases like MySQL as well.
 - Consider rewriting this library as a postgres extension. It would make it possible to
