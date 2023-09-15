@@ -55,6 +55,9 @@ declare
   prefix text;
   suffix text;
 begin
+  if (typeid_str is null) then
+    return null;
+  end if;
   if position('_' in typeid_str) = 0 then
     return ('', base32_decode(typeid_str))::typeid;
   end if;
@@ -82,6 +85,9 @@ declare
   prefix text;
   suffix text;
 begin
+  if (tid is null) then
+    return null;
+  end if;
   prefix = (tid).type;
   suffix = base32_encode((tid).uuid);
   if (prefix is null) or not (prefix ~ '^[a-z]{0,63}$') then
