@@ -23,6 +23,20 @@ $$
 language plpgsql
 volatile;
 
+-- Function that generates a type_id of given type, and returns the parsed typeid as text.
+create or replace function typeid_generate_text(prefix text)
+returns text
+as $$
+begin
+  if (prefix is null) or not (prefix ~ '^[a-z]{0,63}$') then
+    raise exception 'typeid prefix must match the regular expression [a-z]{0,63}';
+  end if;
+  return typeid_print((prefix, uuid_generate_v7())::typeid);
+end
+$$
+language plpgsql
+volatile;
+
 -- Function that checks if a typeid is valid, for the given type prefix.
 -- It also enforces that the UUID is a v7 UUID.
 -- NOTE: we might want to make the version check optional.
@@ -46,6 +60,29 @@ $$
 language plpgsql
 immutable;
 
+-- Function that checks if a typeid is valid, for the given type_id in text format and type prefix, returns boolean.
+-- It also enforces that the UUID is a v7 UUID.
+create or replace function typeid_check_text(type_id text, expected_type text)
+returns boolean
+as $$
+declare
+  prefix text;
+  tid typeid;
+  bytes bytea;
+  ver int;
+begin
+  tid = typeid_parse(type_id);
+  prefix = (tid).type;
+  bytes = uuid_send((tid).uuid);
+  ver = (get_byte(bytes, 6) >> 4)::bit(4)::int;
+  -- Check that:
+  -- + The prefix matches the expected type
+  -- + The UUID version is 7 OR it's the special "nil" UUID
+  return prefix = expected_type AND (ver = 7 OR (tid).uuid = '00000000-0000-0000-0000-000000000000');
+end
+$$
+language plpgsql
+immutable;
 
 -- Function that parses a string into a typeid.
 create or replace function typeid_parse(typeid_str text)

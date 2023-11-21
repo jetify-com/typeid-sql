@@ -25,17 +25,7 @@ implementation to work – simply use the Postgres instance of your choice.
 Once you've installed the TypeID types and functions in your Postgres instance,
 you can use it as follows.
 
-To define a new type of typeid with a specific prefix use the `typeid_check` function:
-```sql
--- Define a `user_id` type, which is a typeid with type prefix "user".
--- Using `user_id` throughout our schema, gives us type safety by guaranteeing
--- that the type prefix is always "user".
-CREATE DOMAIN user_id AS typeid CHECK (typeid_check(value, 'user'));
-```
-
-You can now use the newly defined type in your tables. The `typeid_generate` function
-makes it possible to automatically a new random typeid for each row:
-
+To define a new type of typeid with a specific prefix use the `typeid_
 ```sql
 -- Define a `users` table that uses `user_id` as its primary key.
 -- We use the `typeid_generate` function to randomly generate a new typeid of the
@@ -48,6 +38,28 @@ CREATE TABLE users (
 
 -- Now we can insert new uses and have the `id` column automatically generated.
 INSERT INTO users ("name", "email") VALUES ('Alice P. Hacker', 'alice@hacker.net');
+```
+
+Or
+
+You can use the typeid_generate_text function to generate a new typeid as a string, and not use the typeid type
+
+```sql
+-- Define a `users` table that uses `user_id` as its primary key.
+-- We use the `typeid_generate_text` function to randomly generate a new typeid of the
+-- correct type for each user.
+-- You will need to manually add the check constraint to the column
+CREATE TABLE users (
+    "id" text not null default typeid_generate_text('user') CHECK (typeid_check_text(id, 'user')), 
+    "name" text,
+    "email" text
+);
+
+-- Now we can insert new uses and have the `id` column automatically generated.
+INSERT INTO users ("name", "email") VALUES ('Alice P. Hacker', 'alice@hacker.net');
+SELECT id FROM users;
+-- Result:
+-- "user_01hfs6amkdfem8sb6b1xmg7tq7"
 ```
 
 Note that the database internally encodes typeids as a `(prefix, uuid)` tuple. Because
@@ -66,6 +78,21 @@ SELECT typeid_print(id) AS id, "name", "email" FROM users;
 -- You can also use `typeid_parse` in a WHERE clause to filter by typeid:
 SELECT typeid_print(id) AS id, "name", "email" FROM users
 WHERE id = typeid_parse('user_01h455vb4pex5vsknk084sn02q');
+```
+
+or for the text variant
+
+```sql
+-- Insert a user with a specific typeid that might have been generated elsewhere:
+INSERT INTO users ("id", "name", "email")
+VALUES ('user_01h455vb4pex5vsknk084sn02q', 'Ben Bitdiddle', 'ben@bitdiddle.com');
+
+-- To retrieve the ids as encoded strings, just use the column:
+SELECT id AS id, "name", "email" FROM users;
+
+-- You can also use filter in a WHERE clause to filter by typeid:
+SELECT typeid_print(id) AS id, "name", "email" FROM users
+WHERE id = 'user_01h455vb4pex5vsknk084sn02q';
 ```
 
 ## (Optional) Operator overload
