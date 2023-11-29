@@ -3,7 +3,7 @@ BEGIN;
 SELECT plan(7);
 
 create table tests (
-    "tid" text Check(typeid_check_text(tid, 'generated'))
+    "tid" text CHECK(typeid_check_text(tid, 'generated'))
 );
 -- -- Run tests for typeid_generate_text and typeid_check_text on tests table.
 

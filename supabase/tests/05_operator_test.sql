@@ -17,7 +17,7 @@ SELECT results_eq(
 );
 
 SELECT results_eq(
-  $$ SELECT typeid_print(tid) FROM tests where tid = 'test_01h455vb4pex5vsknk084sn02q' $$,
+  $$ SELECT typeid_print(tid) FROM tests where tid === 'test_01h455vb4pex5vsknk084sn02q' $$,
   ARRAY['test_01h455vb4pex5vsknk084sn02q'],
   'Can select without needing to call typeid_parse() thanks to operator overload'
 );

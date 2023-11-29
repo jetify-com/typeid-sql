@@ -1,4 +1,6 @@
--- Example of how to use typeids in your own tables.
+-- Example of how to use the compound version of typeids in your own tables.
+-- The compound version is a tuple of type (string, uuid)
+
 -- In this example we'll define a users table that uses typeids to identify users.
 
 -- Define a `user_id` type, which is a typeid with type prefix "user".
