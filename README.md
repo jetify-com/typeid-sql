@@ -1,15 +1,18 @@
 # TypeID SQL
-### A SQL implementation of [TypeID](https://github.com/jetpack-io/typeid) using PostgresSQL.
+
+### A SQL implementation of [TypeID](https://github.com/jetify-com/typeid) using PostgresSQL.
+
 ![License: Apache 2.0](https://img.shields.io/github/license/jetpack-io/typeid-sql)
 
 TypeIDs are a modern, **type-safe**, globally unique identifier based on the upcoming
 UUIDv7 standard. They provide a ton of nice properties that make them a great choice
 as the primary identifiers for your data in a database, APIs, and distributed systems.
-Read more about TypeIDs in their [spec](https://github.com/jetpack-io/typeid).
+Read more about TypeIDs in their [spec](https://github.com/jetify-com/typeid).
 
 This particular implementation demonstrates how to use TypeIDs in a postgres database.
 
 ## Installation
+
 To use typeids in your Postgres instance, you'll need define all the
 appropriate types and functions by running the SQL scripts in this repo.
 
@@ -22,10 +25,12 @@ for development and testing, but you do **not** need to use Supabase for this
 implementation to work – simply use the Postgres instance of your choice.
 
 ## Usage
+
 Once you've installed the TypeID types and functions in your Postgres instance,
 you can use it as follows.
 
-To define a new type of typeid with a specific prefix use the `typeid_
+To define a new type of typeid with a specific prefix use the `typeid\_
+
 ```sql
 -- Define a `users` table that uses `user_id` as its primary key.
 -- We use the `typeid_generate` function to randomly generate a new typeid of the
@@ -50,7 +55,7 @@ You can use the typeid_generate_text function to generate a new typeid as a stri
 -- correct type for each user.
 -- You will need to manually add the check constraint to the column
 CREATE TABLE users (
-    "id" text not null default typeid_generate_text('user') CHECK (typeid_check_text(id, 'user')), 
+    "id" text not null default typeid_generate_text('user') CHECK (typeid_check_text(id, 'user')),
     "name" text,
     "email" text
 );
@@ -96,6 +101,7 @@ WHERE id = 'user_01h455vb4pex5vsknk084sn02q';
 ```
 
 ## (Optional) Operator overload
+
 If you'd like to be able to do the following:
 
 ```sql
@@ -109,6 +115,7 @@ SELECT * FROM users u WHERE u.id = 'user_01h455vb4pex5vsknk084sn02q';
 Then you can add in [the operator overload function for typeids](https://github.com/search?q=repo%3Ajetpack-io%2Ftypeid-sql%20compare_type_id_equality&type=code):
 
 ## Future work (contributions welcome)
-- Include examples not just for Postgres, but for other databases like MySQL as well.
-- Consider rewriting this library as a postgres extension. It would make it possible to
-  use the standard typeid string representation without the need of extra functions.
+
+-   Include examples not just for Postgres, but for other databases like MySQL as well.
+-   Consider rewriting this library as a postgres extension. It would make it possible to
+    use the standard typeid string representation without the need of extra functions.
