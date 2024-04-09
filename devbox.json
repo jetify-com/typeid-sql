@@ -1,0 +1,7 @@
+{
+  "$schema":  "https://raw.githubusercontent.com/jetpack-io/devbox/main/.schema/devbox.schema.json",
+  "packages": ["nodejs@18.12.1"],
+  "env": {
+    "DEVBOX_COREPACK_ENABLED": "true",
+  }
+}
