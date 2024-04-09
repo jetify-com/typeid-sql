@@ -2,7 +2,7 @@
 
 ### A SQL implementation of [TypeID](https://github.com/jetify-com/typeid) using PostgresSQL.
 
-![License: Apache 2.0](https://img.shields.io/github/license/jetpack-io/typeid-sql)
+![License: Apache 2.0](https://img.shields.io/github/license/jetify-com/typeid-sql)
 
 TypeIDs are a modern, **type-safe**, globally unique identifier based on the upcoming
 UUIDv7 standard. They provide a ton of nice properties that make them a great choice
@@ -112,7 +112,7 @@ SELECT * FROM users u WHERE u.id = 'user_01h455vb4pex5vsknk084sn02q';
 -- "(user,018962e7-3a6d-7290-b088-5c4e3bdf918c)",Ben Bitdiddle,ben@bitdiddle.com
 ```
 
-Then you can add in [the operator overload function for typeids](https://github.com/search?q=repo%3Ajetpack-io%2Ftypeid-sql%20compare_type_id_equality&type=code):
+Then you can add in [the operator overload function for typeids](https://github.com/search?q=repo%3Ajetify-com%2Ftypeid-sql%20compare_type_id_equality&type=code):
 
 ## Future work (contributions welcome)
 
