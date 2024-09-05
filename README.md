@@ -1,6 +1,6 @@
 # TypeID SQL
 
-### A SQL implementation of [TypeID](https://github.com/jetify-com/typeid) using PostgresSQL.
+### A SQL implementation of [TypeID](https://github.com/jetify-com/typeid) using PostgreSQL.
 
 ![License: Apache 2.0](https://img.shields.io/github/license/jetify-com/typeid-sql)
 
