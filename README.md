@@ -144,6 +144,27 @@ Then you can add in [the operator overload functions for typeid](https://github.
 Some users have reported issues with the above operator when using Rails and ActiveRecord – we
 recommend removing `COMMUTATOR` from the operator definition if you encounter issues.
 
+## Tests
+
+The tests in [`supabase/tests/`](./supabase/tests/) are using [pgTAP](https://supabase.com/docs/guides/database/extensions/pgtap) as test runner.
+
+You need to install the development dependencies:
+```sh
+yarn install
+```
+
+Afterwards you can run the tests with the command:
+```sh
+yarn test
+```
+
+If you need to reset the database after changing the migrations in [`sql/`](./sql/), you can do so with the following command:
+```sh
+yarn test:reset
+```
+
+See also [Testing Your Database](https://supabase.com/docs/guides/database/testing) for more details.
+
 ## Future work (contributions welcome)
 
 -   Include examples not just for Postgres, but for other databases like MySQL as well.

@@ -1,6 +1,6 @@
 -- Start transaction and plan the tests.
 BEGIN;
-SELECT plan(41);
+SELECT plan(44);
 
 create table tests (
     "tid" typeid
@@ -113,6 +113,26 @@ SELECT is(
   'Print valid: valid-alphabet'
 );
 
+-- - name: valid-prefix-underscores
+--   typeid: "pre_fix_0123456789abcdefghjkmnpqrs"
+--   prefix: "pre_fix"
+--   uuid: "0110c853-1d09-52d8-d73e-1194e95b5f19"
+SELECT is(
+  typeid_parse('pre_fix_0123456789abcdefghjkmnpqrs'),
+  ('pre_fix', '0110c853-1d09-52d8-d73e-1194e95b5f19')::typeid,
+  'Parse valid: valid-prefix-underscores'
+);
+SELECT is(
+  typeid_print(('pre_fix', '0110c853-1d09-52d8-d73e-1194e95b5f19')),
+  'pre_fix_0123456789abcdefghjkmnpqrs',
+  'Print valid: valid-alphabet-underscores'
+);
+SELECT is(
+  typeid_print(('pre_____fix', '0110c853-1d09-52d8-d73e-1194e95b5f19')),
+  'pre_____fix_0123456789abcdefghjkmnpqrs',
+  'Print valid: valid-alphabet-underscores'
+);
+
 -- - name: valid-uuidv7
 --   typeid: "prefix_01h455vb4pex5vsknk084sn02q"
 --   prefix: "prefix"
@@ -135,13 +155,13 @@ SELECT is(
 --   description: "The prefix should be lowercase with no uppercase letters"
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_parse('PREFIX_00000000000000000000000000')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-uppercase'
 );
 
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_generate('PREFIX')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-uppercase'
 );
 
@@ -150,13 +170,13 @@ SELECT throws_ok(
 --   description: "The prefix can't have numbers, it needs to be alphabetic"
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_parse('12345_00000000000000000000000000')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-numeric'
 );
 
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_generate('12345')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-numeric'
 );
 
@@ -165,28 +185,28 @@ SELECT throws_ok(
 --   description: "The prefix can't have symbols, it needs to be alphabetic"
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_parse('pre.fix_00000000000000000000000000')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-period'
 );
 
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_generate('pre.fix')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-period'
 );
 
 -- - name: prefix-underscore
 --   typeid: "pre_fix_00000000000000000000000000"
---   description: "The prefix can't have symbols, it needs to be alphabetic"
+--   description: "The prefix can't have leading or trailing underscores"
 SELECT throws_ok(
-  $$ INSERT into tests (tid) VALUES (typeid_parse('pre_fix_00000000000000000000000000')); $$,
-  'typeid suffix must be 26 characters',
+  $$ INSERT into tests (tid) VALUES (typeid_generate('_prefix')); $$,
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-underscore'
 );
 
 SELECT throws_ok(
-  $$ INSERT into tests (tid) VALUES (typeid_generate('pre_fix')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  $$ INSERT into tests (tid) VALUES (typeid_generate('prefix_')); $$,
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-underscore'
 );
 
@@ -195,13 +215,13 @@ SELECT throws_ok(
 --   description: "The prefix can only have ascii letters"
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_parse('préfix_00000000000000000000000000')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-non-ascii'
 );
 
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_generate('préfix')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-non-ascii'
 );
 
@@ -210,13 +230,13 @@ SELECT throws_ok(
 --   description: "The prefix can't have any spaces"
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_parse('  prefix_00000000000000000000000000')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-spaces'
 );
 
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_generate('  prefix')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-spaces'
 );
 
@@ -226,13 +246,13 @@ SELECT throws_ok(
 --   description: "The prefix can't be 64 characters, it needs to be 63 characters or less"
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_parse('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl_00000000000000000000000000')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-64-chars'
 );
 
 SELECT throws_ok(
   $$ INSERT into tests (tid) VALUES (typeid_generate('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl')); $$,
-  'typeid prefix must match the regular expression [a-z]{0,63}',
+  'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$',
   'Parse invalid: prefix-64-chars'
 );
 

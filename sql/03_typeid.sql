@@ -8,13 +8,13 @@
 create type "typeid" as ("type" varchar(63), "uuid" uuid);
 
 -- Function that generates a random typeid of the given type.
--- This depends on the `uuid_generate_v7` function defined in `uuid_v7.sql`.
+-- This depends on the `uuid_generate_v7` function defined in `01_uuidv7.sql`.
 create or replace function typeid_generate(prefix text)
 returns typeid
 as $$
 begin
-  if (prefix is null) or not (prefix ~ '^[a-z]{0,63}$') then
-    raise exception 'typeid prefix must match the regular expression [a-z]{0,63}';
+  if (prefix is null) or not (prefix ~ '^([a-z]([a-z_]{0,61}[a-z])?)?$') then
+    raise exception 'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$';
   end if;
   return (prefix, uuid_generate_v7())::typeid;
 end
@@ -27,8 +27,8 @@ create or replace function typeid_generate_text(prefix text)
 returns text
 as $$
 begin
-  if (prefix is null) or not (prefix ~ '^[a-z]{0,63}$') then
-    raise exception 'typeid prefix must match the regular expression [a-z]{0,63}';
+  if (prefix is null) or not (prefix ~ '^([a-z]([a-z_]{0,61}[a-z])?)?$') then
+    raise exception 'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$';
   end if;
   return typeid_print((prefix, uuid_generate_v7())::typeid);
 end
@@ -73,6 +73,7 @@ as $$
 declare
   prefix text;
   suffix text;
+  matches text[];
 begin
   if (typeid_str is null) then
     return null;
@@ -80,14 +81,18 @@ begin
   if position('_' in typeid_str) = 0 then
     return ('', base32_decode(typeid_str))::typeid;
   end if;
-  prefix = split_part(typeid_str, '_', 1);
-  suffix = split_part(typeid_str, '_', 2);
+  matches = regexp_match(typeid_str, '^(.*)_(.*)$');
+  if array_length(matches, 1) != 2 then
+    raise exception 'invalid typeid';
+  end if;
+  prefix = matches[1];
+  suffix = matches[2];
   if prefix is null or prefix = '' then
     raise exception 'typeid prefix cannot be empty with a delimiter';
   end if;
   -- prefix must match the regular expression [a-z]{0,63}
-  if not prefix ~ '^[a-z]{0,63}$' then
-    raise exception 'typeid prefix must match the regular expression [a-z]{0,63}';
+  if not prefix ~ '^([a-z]([a-z_]{0,61}[a-z])?)?$' then
+    raise exception 'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$';
   end if;
 
   return (prefix, base32_decode(suffix))::typeid;
@@ -109,8 +114,8 @@ begin
   end if;
   prefix = (tid).type;
   suffix = base32_encode((tid).uuid);
-  if (prefix is null) or not (prefix ~ '^[a-z]{0,63}$') then
-    raise exception 'typeid prefix must match the regular expression [a-z]{0,63}';
+  if (prefix is null) or not (prefix ~ '^([a-z]([a-z_]{0,61}[a-z])?)?$') then
+    raise exception 'typeid prefix must match the regular expression ^([a-z]([a-z_]{0,61}[a-z])?)?$';
   end if;
   if prefix = '' then
     return suffix;
