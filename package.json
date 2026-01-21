@@ -9,5 +9,8 @@
     "test:start": "supabase start && supabase test db",
     "test:stop": "supabase stop",
     "test:reset": "supabase db reset"
+  },
+  "resolutions": {
+    "tar": "^7.5.3"
   }
 }
