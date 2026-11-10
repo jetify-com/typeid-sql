@@ -2,7 +2,7 @@
   "name": "typeid-sql",
   "version": "0.1.0",
   "devDependencies": {
-    "supabase": "^1.153.4"
+    "supabase": "^3.1.0"
   },
   "scripts": {
     "test": "supabase start && supabase test db && supabase stop",
